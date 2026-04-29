@@ -9,7 +9,7 @@ pipeline {
 
         stage('Clone') {
             steps {
-                git branch: 'main', url: 'https://github.com/<your-username>/flask_Practice.git'
+                git branch: 'main', url: 'https://github.com/bindu818309-bit/flask_Practice.git'
             }
         }
 
