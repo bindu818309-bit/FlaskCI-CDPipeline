@@ -1,0 +1,66 @@
+name: Flask CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    env:
+      MONGO_URI: mongodb+srv://bindu413_db_user:XhQq6geN0iJnBA5h@devopsherovired.thfhwft.mongodb.net/students_db
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Tests
+        run: |
+          source venv/bin/activate
+          pip install pytest
+          pytest
+
+  build:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Build Step
+        run: echo "Build successful"
+
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+
+    steps:
+      - name: Deploy to Staging
+        run: echo "Deploying to staging server..."
+
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Deploy to Production
+        run: echo "Deploying to production..."
